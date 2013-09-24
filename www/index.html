@@ -26,7 +26,8 @@
         
         <meta name="viewport" content="initial-scale=0.5,maximum-scale=0.5,minimum-scale=0.5,user-scalable=no" />
 		<style>
-			body  {  background-color: white; }
+			html {  overflow:hidden;}
+			body  {  background-color: white; overflow:none;}
 			#KEPERNYO { overflow: hidden;  }
 			.no-bounce { width: 100%; height: 100%; overflow-y: scroll; -webkit-overflow-scrolling: touch; }
 			.no-bounce > div { width: 100%; height: 100%; overflow-y: scroll; -webkit-overflow-scrolling: touch; }
@@ -35,7 +36,7 @@
 		</style>
         
     </head>
-    <body>
+    <body onmousemove="EgerMozgas(event)" onmousedown="LE(event)" onmouseup="FEL(event)" >
         <script type="text/javascript" src="phonegap.js"></script>
         
         <script type="text/javascript">
@@ -43,7 +44,10 @@
 			{
 					document.addEventListener("deviceready", onDeviceReady, false);
 			}
-	
+			
+			
+			 
+			
 			var onDeviceReady = function() 
 			{
 				document.addEventListener('kepcsik', function(event) {
@@ -52,35 +56,92 @@
 						event.preventDefault(); }
 					}, false);
 					
+					
+					
 				var K = document.getElementById("KEPERNYO");
 				K.style.width=window.innerWidth;
 				K.style.height=window.innerHeight;
+				
 			}
 			
-						
-				
+			var I = document.getElementById("info");
+					
+			function S(Xertek,Yertek) 
+			{
+			   this.x = this.x || 0; 
+			   this.y = this.y || 0; 
+			   if (Xertek) { this.x=Xertek; }
+			   if (Yertek) { this.y=Xertek; }  
+			}; 
 			
-			var Anim;	
+			var start = new S;
+			
+			
+			
+			function EgerLe (evt)
+			{
+				X = evt.clientX;
+				Y = parseInt(window.innerHeight-evt.clientY);
+				if (parseInt(X*X+Y*Y)<62500)
+				{
+					start.x = X;
+					start.y = Y;
+				} 
+			}
+			
+			var leftMButtonDown = false;
+			var Sx = 0;
+			var Sy = 0;
+			var LE = function(e) {
+				if(e.which === 1) {leftMButtonDown = true; Sx=e.clientX; Sy=e.clientY; }
+			};
+			
+			var FEL = function(e) {
+				if(leftMButtonDown && e.which === 1) {leftMButtonDown = false;   }   //var newposX = parseInt(posX / 500)*500; ToAnim = setInterval("AnimateTo("+newposX+")",2);
+ 			};
+			
+			
+			
+			function EgerMozgas(e)
+			{
+					document.getElementById("info").style.fontWeight=(leftMButtonDown)?"bold":"normal";
+					document.getElementById("info").innerHTML = posX+":"+start.x+","+start.y + "  " + e.clientX+","+parseInt(window.innerHeight-e.clientY);
+					if (leftMButtonDown) 
+					{
+						var irany = e.clientX-Sx+e.clientY-Sy;  Sx = e.clientX;
+						Animate(irany); 
+					}
+			}	
+			
+			var Anim;	var ToAnim;
 			function Start()
 			{
-				Anim = setInterval("Animate()",10);
+				Anim = setInterval("Animate(10)",10);
 			}	
 				posX = 0;
-			function Animate()
+			function Animate(elmozdulas)
 			{
-				posX += 10;
+				posX += elmozdulas;
 				//document.getElementById("Display").innerHTML = posX;
 				var Obj = document.getElementById("karika");
 				Obj.setAttribute("transform", "rotate(" + parseFloat(posX/10) + " 253 254)");
 				if (posX>3600) { clearInterval(Anim); Anim=0; posX=0;}
 			}
 			
+			function AnimateTo(newposX)
+			{
+				if (newposX==posX) { clearInterval(ToAnim); ToAnim=0; }
+				irany = (newposX>posX)?1:0;
+				Animate(irany);			
+			}
+			
 			
         </script>
         
         <div id="KEPERNYO">
-        
-			<input type="button" value="Forgás" onclick="Start();" style="font:bold 25px Arial;"/>
+        	
+			<input type="button" value="Forgás" onclick="Start();" style="font:bold 25px Arial;float:left;"/>
+			<div id="info" style="font: 15px Arial;float:left;">XXX,XXX</div>
 			
 			<div id="keret1" class="noBounce" style="overflow:scroll; -webkit-overflow-scrolling: touch; position:absolute; width:100%; height:100px; top:50px; left:0px; right:0px; border:2px solid blue;">
 				<img id="kepcsik" class="noBounce" src="img/csik.jpg" style="width:1000px; height:100px; "/>
